@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar {
+      background: #000;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      color: #1c69d4 !important;
+      font-weight: bold;
+    }
+
+    .brand-logo {
+      height: 36px;
+      width: 36px;
+      object-fit: contain;
+    }
+
+    .auth-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 22px rgba(0,0,0,0.25);
+      margin-right: 12px;
+      color: #fff;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 30%, #2b7cff, #0a4fa7);
+      color: #fff;
+      font-size: 16px;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.15), 0 4px 10px rgba(10,79,167,0.45);
+    }
+
+    .welcome-text {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .welcome-text .name {
+      background: linear-gradient(90deg, #43a6ff 0%, #91e5ff 50%, #1c69d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 14px rgba(67,166,255,0.35);
+    }
+
+    .btn-logout {
+      border: 1px solid #1c69d4;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(28,105,212,0.95) 0%, rgba(10,79,167,0.95) 100%);
+      box-shadow: 0 6px 20px rgba(28,105,212,0.35);
+    }
+
+    .btn-logout:hover {
+      background-color: #0a4fa7;
+      color: #fff;
+      box-shadow: 0 10px 26px rgba(28,105,212,0.45);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .page-title h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      position: relative;
+    }
+
+    .page-title h1::after {
+      content: "";
+      display: block;
+      height: 3px;
+      width: 72px;
+      margin-top: 8px;
+      background: rgba(28,105,212,0.85);
+      border-radius: 3px;
+    }
+
+    .btn-success {
+      background-color: #1c69d4;
+      color: #fff;
+      border-color: #1c69d4;
+      box-shadow: 0 6px 16px rgba(28,105,212,0.35);
+    }
+
+    .btn-success:hover {
+      background-color: #0a4fa7;
+      border-color: #0a4fa7;
+      box-shadow: 0 10px 22px rgba(28,105,212,0.45);
+    }
+
+    .search-bar input {
+      background: rgb(114, 114, 114);
+      color: #fff;
+      border: 1px solid rgba(28, 105, 212, 0.5);
+    }
+
+    .table thead {
+      background-color: rgba(28, 105, 212, 0.12);
+    }
+    .table-dark {
+      --bs-table-bg: rgba(0,0,0,0.55);
+      --bs-table-striped-bg: rgba(255,255,255,0.03);
+      --bs-table-hover-bg: rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- navbar -->
+  <nav class="navbar navbar-expand-lg px-4 py-2">
+    <div class="d-flex align-items-center gap-2">
+      <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg" alt="BMW" />
+      <a class="navbar-brand">BMW Admin</a>
+    </div>
+    <div class="ms-auto d-flex align-items-center">
+      <div class="auth-info d-none d-md-inline-flex">
+        <div class="avatar">👤</div>
+        <span class="welcome-text">Welcome, <span class="name">{{adminName}}</span></span>
+      </div>
+      <form action="/admin/logout" method="POST" class="ms-2">
+        <button type="submit" class="btn btn-logout"><i class="bi bi-power"></i> Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <!-- main content -->
+  <div class="container mt-5">
+    <div class="page-title">
+      <h1>Dashboard</h1>
+      <div class="d-none d-sm-flex align-items-center gap-2 text-white-50">
+        <i class="bi bi-speedometer2"></i>
+        <span>Manage users and settings</span>
+      </div>
+  </div>
+
+  
+    <div class="glass-card">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h2 class="m-0">Manage Cars</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCarModal">
+          <i class="bi bi-plus-circle"></i> Add Car
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-dark table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each cars}}
+            <tr>
+              <td>{{inc @index}}</td>
+              <td><img src="{{this.imageUrl}}" alt="{{this.name}}" style="width:80px; height:48px; object-fit:cover; border-radius:6px;"></td>
+              <td>{{this.name}}</td>
+              <td>{{this.price}}</td>
+              <td>{{this.createdAt}}</td>
+              <td>
+                <button
+                  class="btn btn-warning btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editCarModal"
+                  data-id="{{this._id}}"
+                  data-name="{{this.name}}"
+                  data-imageurl="{{this.imageUrl}}"
+                  data-price="{{this.price}}"
+                  data-specs='{{json this.specs}}'>
+                  Edit
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDeleteCar('{{this._id}}')">Delete</button>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-4">
+    <div class="glass-card mt-4">
+      <h2 class="mb-4">Manage Users</h2>
+
+      <!-- search and create -->
+      <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
+        <form action="/admin/search" method="GET" class="search-bar w-100 w-md-auto">
+          <input type="text" name="q" class="form-control" placeholder="Search by name or email" />
+        </form>
+
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
+          <i class="bi bi-person-plus-fill"></i> Create User
+        </button>
+      </div>
+
+      <!-- usr table -->
+      <div class="table-responsive">
+        <table class="table table-dark table-striped table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each users}}
+            <tr>
+              <td>{{inc @index}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.email}}</td>
+              <td>{{this.createdAt}}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
+                  data-id="{{this._id}}" data-name="{{this.name}}" data-email="{{this.email}}">
+                  Edit
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{this._id}}')">
+                  Delete
+                </button>
+
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Car Modal -->
+  <div class="modal fade" id="editCarModal" tabindex="-1" aria-labelledby="editCarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="editCarForm" method="POST">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="editCarLabel">Edit Car</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="name" id="editCarName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Model (auto)</label>
+              <input type="text" class="form-control" id="editCarModelDisplay" value="" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Image URL</label>
+              <input type="url" class="form-control" name="imageUrl" id="editCarImageUrl" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Year</label>
+              <select class="form-select" id="editCarYear">
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+                <option value="2011">2011</option>
+                <option value="2010">2010</option>
+                <option value="2009">2009</option>
+                <option value="2008">2008</option>
+                <option value="2007">2007</option>
+                <option value="2006">2006</option>
+                <option value="2005">2005</option>
+                <option value="2004">2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995">1995</option>
+                <option value="1994">1994</option>
+                <option value="1993">1993</option>
+                <option value="1992">1992</option>
+                <option value="1991">1991</option>
+                <option value="1990">1990</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Engine</label>
+              <select class="form-select" id="editCarEngine">
+                <option>1.2L NA</option>
+                <option>1.5L Turbo</option>
+                <option>1.6L Turbo</option>
+                <option>2.0L Turbo</option>
+                <option>2.0L TwinPower</option>
+                <option>2.5L NA</option>
+                <option>3.0L Turbo</option>
+                <option>3.0L TwinPower</option>
+                <option>3.0L M TwinPower</option>
+                <option>4.0L V8</option>
+                <option>4.4L V8 TwinTurbo</option>
+                <option>Hybrid 2.0L</option>
+                <option>Hybrid 3.0L</option>
+                <option>Electric Single Motor</option>
+                <option>Electric Dual Motor</option>
+                <option>Diesel 2.0L</option>
+                <option>Diesel 3.0L</option>
+                <option>Plug-in Hybrid</option>
+                <option>1.0L Turbo</option>
+                <option>2.0L M Performance</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Horsepower</label>
+              <select class="form-select" id="editCarHp">
+                <option>120 hp</option>
+                <option>150 hp</option>
+                <option>180 hp</option>
+                <option>200 hp</option>
+                <option>225 hp</option>
+                <option>250 hp</option>
+                <option>300 hp</option>
+                <option>350 hp</option>
+                <option>400 hp</option>
+                <option>450 hp</option>
+                <option>473 hp</option>
+                <option>500 hp</option>
+                <option>550 hp</option>
+                <option>600 hp</option>
+                <option>650 hp</option>
+                <option>700 hp</option>
+                <option>750 hp</option>
+                <option>800 hp</option>
+                <option>900 hp</option>
+                <option>1000 hp</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Transmission</label>
+              <select class="form-select" id="editCarTrans">
+                <option>Manual</option>
+                <option>Automatic</option>
+                <option>6-Speed Automatic</option>
+                <option>8-Speed Automatic</option>
+                <option>Dual-Clutch</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fuel Type</label>
+              <select class="form-select" id="editCarFuel">
+                <option>Petrol</option>
+                <option>Diesel</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mileage (range)</label>
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control" id="editCarMileageMin" placeholder="From (km/l)">
+                <input type="text" class="form-control" id="editCarMileageMax" placeholder="To (km/l)">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Seating Capacity</label>
+              <select class="form-select" id="editCarSeat">
+                <option>4</option>
+                <option>5</option>
+                <option>7</option>
+                <option>12</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price</label>
+              <input type="text" class="form-control" name="price" id="editCarPrice" placeholder="₹...">
+            </div>
+            <textarea name="specs" id="editCarSpecs" hidden></textarea>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="editForm" method="POST">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="id" id="userId">
+            <div class="mb-3">
+              <label for="userName" class="form-label">Name</label>
+              <input type="text" class="form-control" name="name" id="userName">
+            </div>
+            <div class="mb-3">
+              <label for="userEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" id="userEmail">
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Car Modal -->
+  <div class="modal fade" id="addCarModal" tabindex="-1" aria-labelledby="addCarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="addCarForm" method="POST" action="/admin/cars">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="addCarLabel">Add Car</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="name" id="addCarName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Model (auto)</label>
+              <input type="text" class="form-control" id="addCarModelDisplay" value="" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Image URL</label>
+              <input type="url" class="form-control" name="imageUrl" placeholder="https://..." required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Year</label>
+              <select class="form-select" id="addCarYear">
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+                <option value="2011">2011</option>
+                <option value="2010">2010</option>
+                <option value="2009">2009</option>
+                <option value="2008">2008</option>
+                <option value="2007">2007</option>
+                <option value="2006">2006</option>
+                <option value="2005">2005</option>
+                <option value="2004">2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995">1995</option>
+                <option value="1994">1994</option>
+                <option value="1993">1993</option>
+                <option value="1992">1992</option>
+                <option value="1991">1991</option>
+                <option value="1990">1990</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Engine</label>
+              <select class="form-select" id="addCarEngine">
+                <option>1.2L NA</option>
+                <option>1.5L Turbo</option>
+                <option>1.6L Turbo</option>
+                <option>2.0L Turbo</option>
+                <option>2.0L TwinPower</option>
+                <option>2.5L NA</option>
+                <option>3.0L Turbo</option>
+                <option>3.0L TwinPower</option>
+                <option>3.0L M TwinPower</option>
+                <option>4.0L V8</option>
+                <option>4.4L V8 TwinTurbo</option>
+                <option>Hybrid 2.0L</option>
+                <option>Hybrid 3.0L</option>
+                <option>Electric Single Motor</option>
+                <option>Electric Dual Motor</option>
+                <option>Diesel 2.0L</option>
+                <option>Diesel 3.0L</option>
+                <option>Plug-in Hybrid</option>
+                <option>1.0L Turbo</option>
+                <option>2.0L M Performance</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Horsepower</label>
+              <select class="form-select" id="addCarHp">
+                <option>120 hp</option>
+                <option>150 hp</option>
+                <option>180 hp</option>
+                <option>200 hp</option>
+                <option>225 hp</option>
+                <option>250 hp</option>
+                <option>300 hp</option>
+                <option>350 hp</option>
+                <option>400 hp</option>
+                <option>450 hp</option>
+                <option>473 hp</option>
+                <option>500 hp</option>
+                <option>550 hp</option>
+                <option>600 hp</option>
+                <option>650 hp</option>
+                <option>700 hp</option>
+                <option>750 hp</option>
+                <option>800 hp</option>
+                <option>900 hp</option>
+                <option>1000 hp</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Transmission</label>
+              <select class="form-select" id="addCarTrans">
+                <option>Manual</option>
+                <option>Automatic</option>
+                <option>6-Speed Automatic</option>
+                <option>8-Speed Automatic</option>
+                <option>Dual-Clutch</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fuel Type</label>
+              <select class="form-select" id="addCarFuel">
+                <option>Petrol</option>
+                <option>Diesel</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mileage (range)</label>
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control" id="addCarMileageMin" placeholder="From (km/l)">
+                <input type="text" class="form-control" id="addCarMileageMax" placeholder="To (km/l)">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Seating Capacity</label>
+              <select class="form-select" id="addCarSeat">
+                <option>4</option>
+                <option>5</option>
+                <option>7</option>
+                <option>12</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price</label>
+              <input type="text" class="form-control" name="price" placeholder="₹...">
+            </div>
+            <textarea name="specs" id="addCarSpecs" hidden></textarea>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var nameInput = document.getElementById('addCarName');
+      var modelDisplay = document.getElementById('addCarModelDisplay');
+      if(nameInput && modelDisplay){ nameInput.addEventListener('input', function(){ modelDisplay.value = nameInput.value; }); }
+      var form = document.getElementById('addCarForm');
+      if(form){
+        form.addEventListener('submit', function(e){
+          try{
+            var specs = {
+              Model: (modelDisplay && modelDisplay.value) || (nameInput && nameInput.value) || '',
+              Year: (document.getElementById('addCarYear') && document.getElementById('addCarYear').value) || '',
+              Engine: (document.getElementById('addCarEngine') && document.getElementById('addCarEngine').value) || '',
+              Horsepower: (document.getElementById('addCarHp') && document.getElementById('addCarHp').value) || '',
+              Transmission: (document.getElementById('addCarTrans') && document.getElementById('addCarTrans').value) || '',
+              'Fuel Type': (document.getElementById('addCarFuel') && document.getElementById('addCarFuel').value) || '',
+              Mileage: (function(){ var a = document.getElementById('addCarMileageMin')?.value || ''; var b = document.getElementById('addCarMileageMax')?.value || ''; return (a && b) ? (a + ' to ' + b + ' km/l') : (a || b); })(),
+              Seating: (document.getElementById('addCarSeat') && document.getElementById('addCarSeat').value) || ''
+            };
+            document.getElementById('addCarSpecs').value = JSON.stringify(specs);
+          }catch(err){ /* no-op */ }
+        });
+      }
+    })();
+  </script>
+
+  <!-- create -->
+  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="createForm" method="POST" action="/admin/create-user">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header border-0">
+            <h5 class="modal-title">Create New User</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="newUserName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="newUserName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="newUserEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="newUserEmail" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="newUserPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="newUserPassword" name="password" required>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Create</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const createForm = document.getElementById('createForm');
+
+    createForm.addEventListener('submit', async function (e) {
+      console.log("creater form")
+      e.preventDefault();
+
+      const name = document.getElementById('newUserName').value.trim();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const password = document.getElementById('newUserPassword').value.trim();
+      console.log("pafjoesuafn")
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&]).{8,}$/;
+
+      if (!name || !email || !emailRegex.test(email) || !passwordRegex.test(password)) {
+        Swal.fire({
+          icon: "error",
+          title: "Validation Error",
+          text: "Fill in valid name, email, and strong password.",
+          background: '#1a1a1a',
+          color: '#f1f1f1',
+          iconColor: '#00bcd4',
+          confirmButtonColor: '#1c69d4'
+        });
+        return;
+      }
+
+      createForm.submit()
+
+    });
+  </script>
+
+  <script>
+    (function(){
+      var message = '{{message}}';
+      var trimmed = (message || '').trim();
+      if(!trimmed) return;
+      var navEntries = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation') : [];
+      var isReload = (navEntries && navEntries[0] && navEntries[0].type === 'reload') || (performance && performance.navigation && performance.navigation.type === 1);
+      try {
+        var key = 'admin_flash_' + btoa(encodeURIComponent(trimmed)).slice(0, 24);
+        var alreadyShown = sessionStorage.getItem(key) === '1';
+        if (!isReload && !alreadyShown) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: trimmed,
+            timer: 2000,
+            showConfirmButton: false,
+            background: '#1f1f1f',
+            color: '#f1f1f1',
+            iconColor: '#1c69d4'
+          });
+          sessionStorage.setItem(key, '1');
+        }
+      } catch(e) { /* ignore */ }
+    })();
+
+  </script>
+  <script>
+    const editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const id = button.getAttribute('data-id');
+      const name = button.getAttribute('data-name');
+      const email = button.getAttribute('data-email');
+
+      const form = document.getElementById('editForm');
+      form.action = `/admin/edit-user/${id}`;
+      document.getElementById('userId').value = id;
+      document.getElementById('userName').value = name;
+      document.getElementById('userEmail').value = email;
+    });
+  </script>
+  <script>
+    const editCarModal = document.getElementById('editCarModal');
+    editCarModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const id = button.getAttribute('data-id');
+      const name = button.getAttribute('data-name') || '';
+      const imageUrl = button.getAttribute('data-imageurl') || '';
+      const price = button.getAttribute('data-price') || '';
+      const specs = button.getAttribute('data-specs') || '{}';
+
+      const form = document.getElementById('editCarForm');
+      form.action = `/admin/cars/${id}`;
+
+      // Populate basic fields
+      document.getElementById('editCarName').value = name;
+      document.getElementById('editCarModelDisplay').value = name;
+      document.getElementById('editCarImageUrl').value = imageUrl;
+      document.getElementById('editCarPrice').value = price;
+
+      // Parse and populate specs
+      try {
+        const specsObj = JSON.parse(specs);
+        if (specsObj.Year) document.getElementById('editCarYear').value = specsObj.Year;
+        if (specsObj.Engine) document.getElementById('editCarEngine').value = specsObj.Engine;
+        if (specsObj.Horsepower) document.getElementById('editCarHp').value = specsObj.Horsepower;
+        if (specsObj.Transmission) document.getElementById('editCarTrans').value = specsObj.Transmission;
+        if (specsObj['Fuel Type']) document.getElementById('editCarFuel').value = specsObj['Fuel Type'];
+        if (specsObj.Seating) document.getElementById('editCarSeat').value = specsObj.Seating;
+        
+        // Parse mileage range
+        if (specsObj.Mileage) {
+          const mileage = specsObj.Mileage;
+          if (mileage.includes(' to ')) {
+            const parts = mileage.split(' to ');
+            document.getElementById('editCarMileageMin').value = parts[0].trim();
+            document.getElementById('editCarMileageMax').value = parts[1].replace(' km/l', '').trim();
+          }
+        }
+      } catch(e) {
+        console.error('Error parsing specs:', e);
+      }
+    });
+
+    // Auto-fill model when name changes
+    document.getElementById('editCarName').addEventListener('input', function(){
+      document.getElementById('editCarModelDisplay').value = this.value;
+    });
+
+    // Handle form submission to build specs
+    document.getElementById('editCarForm').addEventListener('submit', function(e){
+      try{
+        var specs = {
+          Model: document.getElementById('editCarModelDisplay').value || document.getElementById('editCarName').value || '',
+          Year: document.getElementById('editCarYear').value || '',
+          Engine: document.getElementById('editCarEngine').value || '',
+          Horsepower: document.getElementById('editCarHp').value || '',
+          Transmission: document.getElementById('editCarTrans').value || '',
+          'Fuel Type': document.getElementById('editCarFuel').value || '',
+          Mileage: (function(){ 
+            var a = document.getElementById('editCarMileageMin').value || ''; 
+            var b = document.getElementById('editCarMileageMax').value || ''; 
+            return (a && b) ? (a + ' to ' + b + ' km/l') : (a || b); 
+          })(),
+          Seating: document.getElementById('editCarSeat').value || ''
+        };
+        document.getElementById('editCarSpecs').value = JSON.stringify(specs);
+      }catch(err){ /* no-op */ }
+    });
+  </script>
+  <script>
+    function confirmDeleteCar(id){
+      Swal.fire({
+        title: "Delete car?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = `/admin/cars/delete/${id}`;
+        }
+      });
+    }
+  </script>
+  <script>
+    const editForm = document.getElementById('editForm');
+    editForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const userName = document.getElementById('userName').value.trim();
+      const userEmail = document.getElementById('userEmail').value.trim();
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!userName || !emailRegex.test(userEmail)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Validation Error',
+          text: 'Please enter a valid name and email address.',
+          background: '#1a1a1a',
+          color: '#f1f1f1',
+          iconColor: '#1c69d4',
+          confirmButtonColor: '#1c69d4',
+          confirmButtonText: 'Okay',
+          customClass: {
+            popup: 'rounded-4 shadow-lg',
+            title: 'fw-bold',
+            confirmButton: 'px-4 py-2'
+          }
+        });
+        return false;
+      }
+
+      this.submit();
+    });
+  </script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function confirmDelete(userId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = `/admin/delete-user/${userId}?deleted=true`;
+        }
+      });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('deleted') === 'true') {
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "User has been deleted successfully.",
+        showConfirmButton: false,
+        timer: 2000
+      });
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
